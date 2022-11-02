@@ -67,17 +67,17 @@ func crearParticion(size string, unit string, path string, tipe string, fit stri
 		creadoL := false
 
 		if mbru.Mbr_partition_1.Part_type == "e" && mbru.Mbr_partition_1.Part_status == 1 {
-			creadoL = crearParticionL(mbru, tamanoReal, mbru.Mbr_partition_1.Part_start,
-				path, fit, name, mbru.Mbr_partition_1.Part_size)
+			creadoL = crearParticionL(mbru, tamanoReal,
+				path, fit, name, mbru.Mbr_partition_1)
 		} else if mbru.Mbr_partition_2.Part_type == "e" && mbru.Mbr_partition_2.Part_status == 1 {
-			creadoL = crearParticionL(mbru, tamanoReal, mbru.Mbr_partition_2.Part_start,
-				path, fit, name, mbru.Mbr_partition_2.Part_size)
+			creadoL = crearParticionL(mbru, tamanoReal,
+				path, fit, name, mbru.Mbr_partition_2)
 		} else if mbru.Mbr_partition_3.Part_type == "e" && mbru.Mbr_partition_3.Part_status == 1 {
-			creadoL = crearParticionL(mbru, tamanoReal, mbru.Mbr_partition_3.Part_start,
-				path, fit, name, mbru.Mbr_partition_3.Part_size)
+			creadoL = crearParticionL(mbru, tamanoReal,
+				path, fit, name, mbru.Mbr_partition_3)
 		} else if mbru.Mbr_partition_4.Part_type == "e" && mbru.Mbr_partition_4.Part_status == 1 {
-			creadoL = crearParticionL(mbru, tamanoReal, mbru.Mbr_partition_4.Part_start,
-				path, fit, name, mbru.Mbr_partition_4.Part_size)
+			creadoL = crearParticionL(mbru, tamanoReal,
+				path, fit, name, mbru.Mbr_partition_4)
 		} else {
 			return "No existe particion extendida"
 		}
@@ -204,8 +204,11 @@ func guardarEBR(ebr EBR, path string, posicion int64) {
 	WriteToFile(dataOut, path, posicion)
 }
 
-func crearParticionL(mbru MBRU, tamanoReal int, inicioExtendida int, path string,
-	fit string, name string, tamanoExtendida int) bool {
+func crearParticionL(mbru MBRU, tamanoReal int, path string,
+	fit string, name string, extendida PartitionU) bool {
+
+	inicioExtendida := extendida.Part_start
+	tamanoExtendida := extendida.Part_size
 
 	dataIn := ReadFromFileEBR(path, int64(inicioExtendida))
 	ebr := DecodeToEBR(dataIn)
@@ -218,12 +221,13 @@ func crearParticionL(mbru MBRU, tamanoReal int, inicioExtendida int, path string
 	ebrGuardar.Part_next = 0
 	ebrGuardar.Part_size = tamanoReal
 
-	var ebrActual EBR
-	var ebrAnterior EBR
+	//inicioBusqueda := inicioExtendida
+	//var ebrActual EBR
+	//var ebrAnterior EBR
 
 	encontrado := false
-	ebrActual = ebr
-	ebrAnterior = ebr
+	//ebrActual = ebr
+	//ebrAnterior = ebr
 
 	if ebr.Part_next == 0 {
 		if tamanoExtendida >= tamanoReal {
@@ -235,9 +239,15 @@ func crearParticionL(mbru MBRU, tamanoReal int, inicioExtendida int, path string
 	} else {
 
 		for {
+			if extendida.Part_fit == "f" {
 
-			var tamano1 int = 0
-			var tamano2 int = 0
+			} else if extendida.Part_fit == "w" {
+
+			} else if extendida.Part_fit == "b" {
+
+			}
+			//var tamano1 int = 0
+			//var tamano2 int = 0
 
 			if encontrado {
 				break
